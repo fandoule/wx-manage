@@ -12,6 +12,7 @@
                     <i :class="sidebarFold?'el-icon-s-unfold':'el-icon-s-fold'"></i>
                 </el-menu-item>
             </el-menu>
+
             <el-menu class="site-navbar__menu site-navbar__menu--right" mode="horizontal">
                 <el-menu-item index="1" @click="$router.push({ name: 'theme' })">
                     <template slot="title">
@@ -30,6 +31,19 @@
                     </el-dropdown>
                 </el-menu-item>
             </el-menu>
+            <el-menu class="site-navbar__menu site-navbar__menu--right">
+                <el-menu-item>
+                    当前公众号
+                    <el-select v-model="wechatAppId" placeholder="请选择">
+                        <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-menu-item>
+            </el-menu>
         </div>
         <!-- 弹窗, 修改密码 -->
         <update-password v-if="updatePassowrdVisible" ref="updatePassowrd"></update-password>
@@ -37,60 +51,108 @@
 </template>
 
 <script>
-import UpdatePassword from './main-navbar-update-password'
-import { clearLoginInfo } from '@/utils'
-export default {
-    data() {
-        return {
-            updatePassowrdVisible: false
-        }
-    },
-    components: {
-        UpdatePassword
-    },
-    computed: {
-        navbarLayoutType: {
-            get() { return this.$store.state.common.navbarLayoutType }
+    import UpdatePassword from './main-navbar-update-password'
+    import {clearLoginInfo} from '@/utils'
+    import {mapMutations} from 'vuex'
+
+    export default {
+        components: {
+            UpdatePassword
         },
-        sidebarFold: {
-            get() { return this.$store.state.common.sidebarFold },
-            set(val) { this.$store.commit('common/updateSidebarFold', val) }
+        data() {
+            return {
+                updatePassowrdVisible: false,
+                wechatAppId: '',
+                options: [],
+            }
         },
-        mainTabs: {
-            get() { return this.$store.state.common.mainTabs },
-            set(val) { this.$store.commit('common/updateMainTabs', val) }
+        computed: {
+            navbarLayoutType: {
+                get() {
+                    return this.$store.state.common.navbarLayoutType
+                }
+            },
+            sidebarFold: {
+                get() {
+                    return this.$store.state.common.sidebarFold
+                },
+                set(val) {
+                    this.$store.commit('common/updateSidebarFold', val)
+                }
+            },
+            mainTabs: {
+                get() {
+                    return this.$store.state.common.mainTabs
+                },
+                set(val) {
+                    this.$store.commit('common/updateMainTabs', val)
+                }
+            },
+            userName: {
+                get() {
+                    return this.$store.state.user.name
+                }
+            }
         },
-        userName: {
-            get() { return this.$store.state.user.name }
-        }
-    },
-    methods: {
-        // 修改密码
-        updatePasswordHandle() {
-            this.updatePassowrdVisible = true
-            this.$nextTick(() => {
-                this.$refs.updatePassowrd.init()
-            })
-        },
-        // 退出
-        logoutHandle() {
-            this.$confirm(`确定进行[退出]操作?`, '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                this.$http({
-                    url: this.$http.adornUrl('/sys/logout'),
-                    method: 'post',
-                    data: this.$http.adornData()
-                }).then(({ data }) => {
-                    if (data && data.code === 200) {
-                        clearLoginInfo()
-                        this.$router.push({ name: 'login' })
-                    }
+        methods: {
+            ...mapMutations(['updateAppId']),
+            // 修改密码
+            updatePasswordHandle() {
+                this.updatePassowrdVisible = true
+                this.$nextTick(() => {
+                    this.$refs.updatePassowrd.init()
                 })
-            }).catch(() => { })
+            },
+            // 退出
+            logoutHandle() {
+                this.$confirm(`确定进行[退出]操作?`, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$http({
+                        url: this.$http.adornUrl('/sys/logout'),
+                        method: 'post',
+                        data: this.$http.adornData()
+                    }).then(({data}) => {
+                        if (data && data.code === 200) {
+                            clearLoginInfo()
+                            this.$router.push({name: 'login'})
+                        }
+                    })
+                }).catch(() => {
+                })
+            },
+
+            //初始化 取公众号列表 选中第一个
+            init() {
+                this.$http({
+                    url: this.$http.adornUrl('/wxMpProperties/getList'),
+                    method: 'get',
+                    data: this.$http.adornData()
+                })
+                    .then(({data}) => {
+                        if (data && data.code === 200) {
+                            let appOptions = data.data.map(({appId, appName}) => ({label: appName, value: appId}));
+                            this.wechatAppId = appOptions[0].value;
+                            this.options = appOptions;
+                        } else {
+                            this.$message.error(data.msg);
+                        }
+                    })
+                    .catch(_ => {
+                    });
+            }
+        },
+        created() {
+            this.init();
+        },
+        //多app
+        watch: {
+            'wechatAppId'(newVal){
+                this.updateAppId(newVal);
+                this.$router.replace({path: '/refresh'})
+            }
         }
     }
-}
 </script>

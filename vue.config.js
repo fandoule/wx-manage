@@ -3,7 +3,7 @@ module.exports = {
     devServer: {
 		proxy: {
 			'/wx': {
-				target: 'http://localhost:8088/'
+				target: 'http://localhost:8080/'
 			}
 		},
 		port:8001,

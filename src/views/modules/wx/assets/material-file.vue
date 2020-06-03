@@ -56,9 +56,7 @@ export default {
             dataListLoading: false,
         }
     },
-    mounted(){
-        this.init()
-    },
+
     methods: {
         init(){
             if(!this.dataList.length){
@@ -75,7 +73,7 @@ export default {
                     'type': this.fileType
                 })
             }).then(({ data }) => {
-                if (data && data.code == 200) {
+                if (data && data.code === 200) {
                     this.dataList = data.data.items
                     this.totalCount = data.data.totalCount
                      this.pageIndex++;
@@ -140,7 +138,11 @@ export default {
             this.$emit('change')
         }
 
-    }
+    },
+    mounted(){
+        console.log('mounted')
+        this.init()
+    },
 }
 </script>
 <style scoped>

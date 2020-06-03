@@ -12,15 +12,18 @@
                 </el-dropdown-menu>
             </el-dropdown>
             <el-tab-pane v-for="item in mainTabs" :key="item.name" :label="item.title" :name="item.name">
-                <el-card :body-style="siteContentViewHeight">
-                    <iframe v-if="item.type === 'iframe'" :src="item.iframeUrl" width="100%" height="100%" frameborder="0" scrolling="yes">
-                    </iframe>
-                    <keep-alive v-else>
-                        <router-view v-if="item.name === mainTabsActiveName" />
-                    </keep-alive>
-                </el-card>
+<!--                <el-card :body-style="siteContentViewHeight">-->
+<!--                    <iframe v-if="item.type === 'iframe'" :src="item.iframeUrl" width="100%" height="100%" frameborder="0" scrolling="yes">-->
+<!--                    </iframe>-->
+<!--                    <keep-alive v-else>-->
+<!--                        <router-view v-if="item.name === mainTabsActiveName" />-->
+<!--                    </keep-alive>-->
+<!--                </el-card>-->
             </el-tab-pane>
         </el-tabs>
+        <el-card v-if="getAppId && $route.meta.isTab" :body-style="siteContentViewHeight">
+            <router-view></router-view>
+        </el-card>
         <!-- 主入口标签页 e -->
         <el-card v-else :body-style="siteContentViewHeight">
             <keep-alive>
@@ -32,13 +35,17 @@
 
 <script>
 import { isURL } from '@/utils/validate'
+import {mapGetters} from 'vuex'
+
 export default {
     inject: ['refresh'],
     data() {
         return {
+            height: 'calc(100vh - 130px)'
         }
     },
     computed: {
+        ...mapGetters(['getAppId']),
         documentClientHeight: {
             get() { return this.$store.state.common.documentClientHeight }
         },
@@ -55,12 +62,17 @@ export default {
             set(val) { this.$store.commit('common/updateMainTabsActiveName', val) }
         },
         siteContentViewHeight() {
+            return {minHeight: this.height, height: this.height};
+
+
+
+/*
             var height = this.documentClientHeight - 50 - 30 - 2
             if (this.$route.meta.isTab) {
                 height -= 40
                 return isURL(this.$route.meta.iframeUrl) ? { height: height + 'px' } : { minHeight: height + 'px' }
             }
-            return { minHeight: height + 'px' }
+            return { minHeight: height + 'px' }*/
         }
     },
     methods: {
@@ -97,7 +109,8 @@ export default {
                 this.$router.push({ name: tab.name, query: tab.query, params: tab.params })
             })
         }
-    }
+    },
+
 }
 </script>
 
