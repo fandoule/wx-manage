@@ -41,7 +41,7 @@
                     <OssUploader slot="append" @uploaded="dataForm.image=$event"></OssUploader>
                 </el-input>
             </el-form-item>
-            <tinymce-editor ref="editor" v-model="dataForm.content"></tinymce-editor>
+            <tinymce-editor ref="editor" v-model="dataForm.content"  :height="430"></tinymce-editor>
         </el-form>
         <div class="margin-top text-right">
             <el-button @click="$emit('hide')">取消</el-button>

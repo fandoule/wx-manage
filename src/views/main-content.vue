@@ -62,7 +62,10 @@ export default {
             set(val) { this.$store.commit('common/updateMainTabsActiveName', val) }
         },
         siteContentViewHeight() {
-            return {minHeight: this.height, height: this.height};
+            return {minHeight: this.height,
+                height: this.height,
+                'overflow-y': 'auto'
+            };
 
 
 

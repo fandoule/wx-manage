@@ -20,7 +20,7 @@
                 <el-form-item label="摘要" prop="digest">
                     <el-input v-model="articles[selectedIndex].digest" placeholder="摘要"></el-input>
                 </el-form-item>
-                <el-form-item label="原文地址" prop="contentSourceUrl">
+                <el-form-item label="原文地址">
                     <el-input v-model="articles[selectedIndex].contentSourceUrl" placeholder="阅读原文链接"></el-input>
                 </el-form-item>
                 <el-row>
@@ -46,7 +46,7 @@
                     </el-col>
                 </el-row>
                 <el-form-item label="内容" prop="content">
-                    <tinymce-editor ref="editor" v-model="articles[selectedIndex].content"> </tinymce-editor>
+                    <tinymce-editor ref="editor" v-model="articles[selectedIndex].content" :height="470"> </tinymce-editor>
                 </el-form-item>
             </el-form>
         </div>
@@ -215,7 +215,7 @@ export default {
     line-height: 50px;
 }
 .dialog-footer {
-    margin-top: 20px;
+    /*margin-top: 10px;*/
     text-align: right;
 }
 </style>

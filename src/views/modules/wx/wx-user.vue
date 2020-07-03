@@ -38,8 +38,8 @@
                 <img class="headimg" slot-scope="scope" v-if="scope.row.headimgurl" :src="scope.row.headimgurl" />
             </el-table-column>
             <el-table-column prop="tagidList" header-align="center" align="center" label="标签" show-overflow-tooltip>
-                <template slot-scope="scope">
-                    <span v-for="tagid in scope.row.tagidList" :key="tagid">{{getTagName(tagid)}} </span>
+                <template slot-scope="{row}">
+                    <span v-for="tag in getTagName(row.tagidList)" :key="tag.id"> {{tag.name}} </span>
                 </template>
             </el-table-column>
             <el-table-column prop="subscribeTime" header-align="center" align="center" label="订阅时间">
@@ -50,7 +50,7 @@
             </el-table-column>
             <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
                 <template slot-scope="scope">
-                    <el-button type="text" size="small" @click="deleteHandle(scope.row.openid)">删除</el-button>
+                    <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -135,8 +135,8 @@ export default {
         },
         // 删除
         deleteHandle(id) {
-            var ids = id ? [id] : this.dataListSelections.map(item => item.openid)
-            this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+            var ids = id ? [id] : this.dataListSelections.map(item => item.id)
+            this.$confirm(`确定对进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
@@ -151,9 +151,7 @@ export default {
                             message: '操作成功',
                             type: 'success',
                             duration: 1500,
-                            onClose: () => {
-                                this.getDataList()
-                            }
+                            onClose: () => this.getDataList()
                         })
                     } else {
                         this.$message.error(data.msg)
@@ -177,7 +175,7 @@ export default {
                     }
                 })
         },
-        
+
         sexFormat(row, column, cellValue) {
             let sexType = {
                 0: '未知',
@@ -186,10 +184,14 @@ export default {
             }
             return sexType[cellValue];
         },
-        getTagName(tagid){
-            let tag = this.wxUserTags.find(item=>item.id==tagid)
-            return tag?tag.name : "?"
+        getTagName(tagidList){
+            return tagidList? tagidList.split(',').map(id=> this.wxUserTags.find(item => item.id == id) || '') : [];
+            // let tag = this.wxUserTags.find(item=>item.id==tagid)
+            // return tag?tag.name : "?"
         }
+    },
+    mounted() {
+        this.getDataList();
     }
 }
 </script>

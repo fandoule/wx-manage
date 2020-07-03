@@ -15,7 +15,7 @@
                 <el-button><el-link type="primary" icon="el-icon-link" target="_blank" href="https://kf.qq.com/faq/170209E3InyI170209nIF7RJ.html">模板管理指引</el-link></el-button>
             </el-form-item>
         </el-form>
-        
+
         <el-table :data="dataList" border v-loading="dataListLoading" @selection-change="selectionChangeHandle" style="width: 100%;">
             <el-table-column type="selection" header-align="center" align="center" width="50">
             </el-table-column>
@@ -42,7 +42,7 @@
         </el-pagination>
         <!-- 弹窗, 新增 / 修改 -->
         <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
-        <template-msg-task v-if="templateMsgTaskVisible" ref="templateMsgTask"></template-msg-task>
+        <template-msg-task v-if="templateMsgTaskVisible" ref="templateMsgTask" @closed="onClose"></template-msg-task>
     </div>
 </template>
 
@@ -208,8 +208,14 @@ export default {
                         reject(data.msg)
                     }
                 }).catch(err=>reject(err))
-            }) 
+            })
+        },
+        onClose(){
+            this.templateMsgTaskVisible = false;
         }
+    },
+    mounted() {
+        this.getDataList();
     }
 }
 </script>

@@ -16,7 +16,12 @@
             </el-table-column>
             <el-table-column prop="data" header-align="center" align="center" :formatter="tableJsonFormat" label="内容"  width="300">
             </el-table-column>
-            <el-table-column prop="sendResult" header-align="center" align="center" show-overflow-tooltip label="发送结果" width="150">
+            <el-table-column header-align="center" align="center" label="发送结果">
+                <template slot-scope="{row}">
+                    <el-tag :type="row.state=== '0'?'success': 'danger'">{{row.state=== '0'?'成功': '失败'}}</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="sendResult" header-align="center" align="center" show-overflow-tooltip label="结果内容" width="150">
             </el-table-column>
             <el-table-column prop="sendTime" header-align="center" align="center" width="100" label="发送时间">
             </el-table-column>
@@ -130,6 +135,9 @@ export default {
             }
             return JSON.stringify(cellValue)
         }
-    }
+    },
+    created(){
+        this.getDataList();
+    },
 }
 </script>

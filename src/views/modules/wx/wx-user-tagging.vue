@@ -41,10 +41,11 @@ export default {
          *     解绑时可选：，union ，即用户有的标签都列出来
          */
         tagidsInOption(){
-            let userTags=this.wxUsers.map(u=>u.tagidList || [])//示例：[[1,2],[],[1,3]]
+            let userTags=this.wxUsers.map(u=> u.tagidList? u.tagidList.split(','): []);//示例：[[1,2],[],[1,3]]
+            console.log(userTags);
             if(this.mode=='tagging'){//绑定标签时可选：所有标签 - 用户标签交集
                 let all = this.wxUserTags.map(item=>item.id)
-                return all.filter(tagid=>!userTags.every(tagsIdArray=>tagsIdArray.indexOf(tagid)>-1))
+                return all.filter(tagid => !userTags.every(tagsIdArray => tagsIdArray.includes(`${tagid}`)))
             }else if(this.mode=='untagging'){//解绑标签时可选：用户标签的并集
                 let unionSet = new Set();
                 userTags.forEach(tagsIdArray=>{
@@ -54,7 +55,7 @@ export default {
             }
             return []
         }
-        
+
     },
     methods:{
         init(mode){
@@ -95,7 +96,7 @@ export default {
                 } else {
                     this.$message.error(data.msg)
                 }
-                
+
             })
         }
     }

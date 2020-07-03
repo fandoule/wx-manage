@@ -16,14 +16,15 @@ export default {
         value: {
             type: String,
             default: ""
-        }
+        },
+        height: {type: Number, default: 500}
     },
     data() {
         return {
             init: {
                 language_url: "./tinymce/zh_CN.js", //public目录下
                 language: "zh_CN",
-                height: 500,
+                height: this.height,
                 plugins: "lists image media table paste link searchreplace anchor code preview pagebreak importcss",
                 toolbar: "undo redo searchreplace |  formatselect pagebreak | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists link anchor image media table | removeformat code preview", //工具栏展示项
                 toolbar_drawer: false,
@@ -83,8 +84,8 @@ export default {
                     this.uploading = false;
                 }).catch(err=>reject(err))
             });
-            
-            
+
+
         }
     },
     watch: {

@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="筛选模板消息目标用户" :close-on-click-modal="false" :visible.sync="visible">
+    <el-dialog title="筛选模板消息目标用户" :close-on-click-modal="false" :visible.sync="visible" @closed="onClosed">
         <el-form :inline="true" :model="dataForm" ref="dataForm" clearable @keyup.enter.native="getWxUsers()">
             <el-form-item>
                 <el-select v-model="dataForm.tagid" filterable placeholder="用户标签" @change="getWxUsers()">
@@ -86,18 +86,7 @@ export default {
             return content
         }
     },
-    mounted() {
-        this.getWxUserTags().then((taglist)=>{
-            if(this.wxUserTagName){
-                let tagItem = taglist.find(tag=>tag.name==this.wxUserTagName)
-                console.log(tagItem)
-                if(tagItem) {
-                    this.dataForm.tagid=tagItem.id+''
-                }
-            }
-            this.getWxUsers()
-        });
-    },
+
     methods:{
         init(msgTemplate){
             if(!msgTemplate || !msgTemplate.templateId){
@@ -110,6 +99,9 @@ export default {
             }
             this.msgTemplate=msgTemplate
             this.visible=true;
+        },
+        onClosed(){
+          this.$emit('closed')
         },
         getWxUserTags() {
             return new Promise((resolve,reject)=>{
@@ -166,7 +158,19 @@ export default {
                 }
             })
         }
-    }
+    },
+    mounted() {
+        this.getWxUserTags().then((taglist)=>{
+            if(this.wxUserTagName){
+                let tagItem = taglist.find(tag=>tag.name==this.wxUserTagName)
+                console.log(tagItem)
+                if(tagItem) {
+                    this.dataForm.tagid=tagItem.id+''
+                }
+            }
+            this.getWxUsers()
+        });
+    },
 }
 </script>
 <style scoped>

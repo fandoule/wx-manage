@@ -164,6 +164,9 @@ export default {
         replyTypeFormat(row, column, cellValue) {
             return this.KefuMsgType[cellValue];
         }
+    },
+    created(){
+        this.getDataList();
     }
 }
 </script>
